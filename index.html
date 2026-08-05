@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading Tracker</title>
+<meta name="theme-color" content="#16130F">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- TODAY -->
+  <section id="view-today" class="view active">
+    <div class="topbar">
+      <span class="date-label" id="today-date"></span>
+      <span class="streak-badge">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3-2 4-2 7a3 3 0 006 0c1.5 1.5 2 3.5 2 5a6 6 0 01-12 0c0-4 2-5 3-8 .5 1 1 1.5 1 1.5S11 4 12 2z"/></svg>
+        <span id="streak-count">0</span>
+      </span>
+    </div>
+
+    <div class="book-card">
+      <img id="book-cover-img" class="book-cover" alt="">
+      <div class="book-info">
+        <div class="book-label">Currently reading</div>
+        <div class="book-title" id="book-title-display">Add a book</div>
+        <button class="book-edit-btn" id="edit-book-btn">Edit &rsaquo;</button>
+      </div>
+    </div>
+
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 220 220">
+        <circle class="ring-track" cx="110" cy="110" r="90"></circle>
+        <circle class="ring-progress" id="ring-progress" cx="110" cy="110" r="90"></circle>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-pages" id="ring-pages">0</div>
+        <div class="ring-goal" id="ring-goal">of 20 pages</div>
+      </div>
+      <div class="ring-message" id="ring-message"></div>
+    </div>
+
+    <div class="timer-card">
+      <div class="timer-display" id="timer-display">00:00</div>
+      <button class="timer-btn start" id="timer-btn">Start reading</button>
+      <div class="timer-hint">Starts a session timer — you'll be asked how many pages when you stop.</div>
+    </div>
+
+    <div class="section-label">Quick add (no timer)</div>
+    <div class="quick-add-row">
+      <button class="chip" data-add="5">+5</button>
+      <button class="chip" data-add="10">+10</button>
+      <button class="chip" data-add="25">+25</button>
+    </div>
+    <div class="manual-row">
+      <input type="number" inputmode="numeric" id="manual-pages" placeholder="Custom page count">
+      <button id="manual-add-btn">Add</button>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="view-history" class="view">
+    <div class="topbar">
+      <span class="date-label">History</span>
+    </div>
+
+    <div class="card">
+      <div class="stat-row">
+        <div class="stat"><div class="stat-num" id="stat-total-pages">0</div><div class="stat-label">Pages (30d)</div></div>
+        <div class="stat"><div class="stat-num" id="stat-current-streak">0</div><div class="stat-label">Current streak</div></div>
+        <div class="stat"><div class="stat-num" id="stat-best-streak">0</div><div class="stat-label">Best streak</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Last 5 weeks</div>
+      <div class="card-sub">Darker = closer to (or past) your daily goal</div>
+      <div class="heatmap" id="heat-dow-row"></div>
+      <div class="heatmap" id="heatmap" style="margin-top:6px;"></div>
+      <div id="heat-caption">Tap a day to see details</div>
+      <div class="heat-legend">
+        <span>Less</span>
+        <div class="heat-cell" style="background:var(--surface-2)"></div>
+        <div class="heat-cell" style="background:var(--sage-soft)"></div>
+        <div class="heat-cell" style="background:var(--sage)"></div>
+        <div class="heat-cell" style="background:var(--gold)"></div>
+        <span>Goal+</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="view-settings" class="view">
+    <div class="topbar">
+      <span class="date-label">Settings</span>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label for="settings-book-title">Book title</label>
+        <input type="text" id="settings-book-title" placeholder="e.g. Dune">
+      </div>
+      <div class="field">
+        <label>Cover photo</label>
+        <div class="cover-picker">
+          <img id="settings-cover-preview" class="book-cover" alt="">
+          <button class="upload-btn" id="settings-upload-btn">Choose photo</button>
+          <input type="file" accept="image/*" id="cover-file-input" class="hidden-file-input">
+        </div>
+      </div>
+      <div class="field">
+        <label for="settings-goal">Daily page goal</label>
+        <input type="number" inputmode="numeric" id="settings-goal" placeholder="20">
+      </div>
+      <button class="save-btn" id="settings-save-btn">Save changes</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Reset</div>
+      <div class="card-sub">Clears your reading log, streak, and book. Cannot be undone.</div>
+      <button class="danger-btn" id="reset-btn">Erase all data</button>
+    </div>
+  </section>
+
+  <nav class="navbar">
+    <button class="nav-btn active" data-view="today">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      Today
+    </button>
+    <button class="nav-btn" data-view="history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
+      History
+    </button>
+    <button class="nav-btn" data-view="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+      Settings
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Pages read modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-title">How many pages?</div>
+      <div class="modal-sub" id="modal-sub">You read for <span id="modal-duration">0 min</span></div>
+      <input type="number" inputmode="numeric" id="modal-pages-input" placeholder="0" autofocus>
+      <button class="modal-save" id="modal-save-btn">Log it</button>
+      <button class="modal-skip" id="modal-skip-btn">Skip, don't log pages</button>
+    </div>
+  </div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
